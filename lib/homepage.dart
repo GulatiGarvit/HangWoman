@@ -18,6 +18,7 @@ class _HomePageState extends State<HomePage> {
   String current = "";
   String eliminated = "";
   Characters? options;
+  int score = 0;
   var widgetOptions = <Widget>[];
 
   @override
@@ -33,10 +34,19 @@ class _HomePageState extends State<HomePage> {
       body: SafeArea(
         child: Container(
           width: double.infinity,
-          margin: EdgeInsets.all(26),
+          margin: EdgeInsets.fromLTRB(26, 0, 26, 26),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
+              SizedBox(
+                height: 20,
+              ),
+              Container(
+                child: Text(
+                  "$score",
+                  style: TextStyle(fontSize: 36, fontWeight: FontWeight.bold),
+                ),
+              ),
               Image.asset(
                 "assets/gifs/Kfde.gif",
                 height: 300,
@@ -86,9 +96,21 @@ class _HomePageState extends State<HomePage> {
       current = reveal(word, current, alphabet);
     } else {
       Fluttertoast.showToast(msg: "Galat Jawab!");
+      eliminated += alphabet;
     }
-    options = generateOptions(word, current, eliminated);
-    widgetOptions = generateWidgets(options!, handleOptionSelection);
+    if (current.replaceAll(" ", "") != word) {
+      options = generateOptions(word, current, eliminated);
+      widgetOptions = generateWidgets(options!, handleOptionSelection);
+    } else {
+      wordGuessed();
+    }
     setState(() {});
+  }
+
+  void wordGuessed() {
+    Fluttertoast.showToast(msg: "Yay! The word was: $word");
+    score += word.length;
+    setState(() {});
+    doTheMagic();
   }
 }
