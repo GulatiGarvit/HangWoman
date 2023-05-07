@@ -15,14 +15,15 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  final totalHearts = 5;
   String word = "";
   String current = "";
   String eliminated = "";
   Characters? options;
   int score = 0;
   var widgetOptions = <Widget>[];
-  var noOfHearts = 5;
-  var hearts = "❤❤❤❤❤";
+  var noOfHearts;
+  var hearts = "";
 
   @override
   void initState() {
@@ -99,12 +100,13 @@ class _HomePageState extends State<HomePage> {
   }
 
   void doTheMagic() async {
-    noOfHearts = 5;
-    hearts = "❤❤❤❤❤";
     word = await generateWord(4 + Random().nextInt(4));
     word = word.toUpperCase();
     current = calculateInitDisplay(word);
+    eliminated = "";
     options = generateOptions(word, current, eliminated);
+    noOfHearts = totalHearts;
+    hearts = getHearts(noOfHearts);
     widgetOptions = generateWidgets(options!, handleOptionSelection);
     setState(() {});
   }
@@ -157,6 +159,7 @@ class _HomePageState extends State<HomePage> {
                 onAdShowedFullScreenContent: (ad) {
                   var toReveal = remaining(word, current);
                   current = reveal(word, current, toReveal);
+                  setState(() {});
                 },
                 // Called when an impression occurs on the ad.
                 onAdImpression: (ad) {},
@@ -182,7 +185,7 @@ class _HomePageState extends State<HomePage> {
 
   void heartsToShow() {
     noOfHearts -= 1;
-    hearts = hearts.substring(0, noOfHearts);
+    hearts = getHearts(noOfHearts);
     print(noOfHearts);
     print(hearts);
     setState(() {});
@@ -190,5 +193,13 @@ class _HomePageState extends State<HomePage> {
       Fluttertoast.showToast(msg: "Level lost!");
       doTheMagic();
     }
+  }
+
+  String getHearts(int n) {
+    String s = "";
+    for (int i = 0; i < n; i++) {
+      s += "❤";
+    }
+    return s;
   }
 }
