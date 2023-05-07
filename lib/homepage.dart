@@ -164,13 +164,19 @@ class _HomePageState extends State<HomePage> {
                 onAdClicked: (ad) {});
             _rewardedAd!.setImmersiveMode(true);
             _rewardedAd!.show(
-                onUserEarnedReward: (AdWithoutView ad, RewardItem reward) {
-              var toReveal = remaining(word, current);
-              current = reveal(word, current, toReveal);
-              setState(() {});
-              print(
-                  '$ad with reward $RewardItem(${reward.amount}, ${reward.type})');
-            });
+              onUserEarnedReward: (AdWithoutView ad, RewardItem reward) {
+                var toReveal = remaining(word, current);
+                current = reveal(word, current, toReveal);
+                if (current.replaceAll(" ", "") == word) {
+                  wordGuessed();
+                } else {
+                  Fluttertoast.showToast(msg: "Revealed: $toReveal");
+                }
+                setState(() {});
+                print(
+                    '$ad with reward $RewardItem(${reward.amount}, ${reward.type})');
+              },
+            );
           },
           // Called when an ad request failed.
           onAdFailedToLoad: (LoadAdError error) {
@@ -187,6 +193,7 @@ class _HomePageState extends State<HomePage> {
     setState(() {});
     if (noOfHearts == 0) {
       Fluttertoast.showToast(msg: "Level lost!");
+      score = 0;
       doTheMagic();
     }
   }
