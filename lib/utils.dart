@@ -1,3 +1,4 @@
+import 'dart:ffi';
 import 'dart:io';
 import 'dart:math';
 import 'package:flutter/material.dart';
@@ -145,4 +146,18 @@ String reveal(String word, String current, String alphabet) {
     newCurrent += i % 2 == 0 ? "${current[(i / 2).floor()]} " : "";
   }
   return newCurrent;
+}
+
+String remaining(String word, String current) {
+  current = current.replaceAll(" ", "");
+  var remainingChar = "";
+  for (int i = 0; i < word.length; i++) {
+    if (current[i] == "_") {
+      remainingChar += word[i];
+    }
+  }
+  Random random = Random();
+  var index = random.nextInt(remainingChar.length);
+  String toReveal = remainingChar[index];
+  return toReveal;
 }
