@@ -1,6 +1,7 @@
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:flutter/material.dart';
 import 'package:hangwoman/homepage.dart';
+import 'package:hangwoman/selector.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -22,8 +23,8 @@ class MyAppState extends State<MyApp> {
   }
 
   Widget build(BuildContext context) {
-    return  MaterialApp(
-      home: HomePage(),
+    return MaterialApp(
+      home: SelectorPage(),
     );
   }
 }

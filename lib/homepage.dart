@@ -149,32 +149,28 @@ class _HomePageState extends State<HomePage> {
         adUnitId: adUnitId,
         request: const AdRequest(),
         rewardedAdLoadCallback: RewardedAdLoadCallback(
-          // Called when an ad is successfully received.
           onAdLoaded: (ad) {
             debugPrint('$ad loaded.');
-            // Keep a reference to the ad so you can show it later.
             _rewardedAd = ad;
             ad.fullScreenContentCallback = FullScreenContentCallback(
-                // Called when the ad showed the full screen content.
-                onAdShowedFullScreenContent: (ad) {
-                  var toReveal = remaining(word, current);
-                  current = reveal(word, current, toReveal);
-                  setState(() {});
-                },
-                // Called when an impression occurs on the ad.
+                onAdShowedFullScreenContent: (ad) {},
                 onAdImpression: (ad) {},
-                // Called when the ad failed to show full screen content.
                 onAdFailedToShowFullScreenContent: (ad, err) {
-                  // Dispose the ad here to free resources.
                   ad.dispose();
                 },
-                // Called when the ad dismissed full screen content.
                 onAdDismissedFullScreenContent: (ad) {
-                  // Dispose the ad here to free resources.
                   ad.dispose();
                 },
-                // Called when a click is recorded for an ad.
                 onAdClicked: (ad) {});
+            _rewardedAd!.setImmersiveMode(true);
+            _rewardedAd!.show(
+                onUserEarnedReward: (AdWithoutView ad, RewardItem reward) {
+              var toReveal = remaining(word, current);
+              current = reveal(word, current, toReveal);
+              setState(() {});
+              print(
+                  '$ad with reward $RewardItem(${reward.amount}, ${reward.type})');
+            });
           },
           // Called when an ad request failed.
           onAdFailedToLoad: (LoadAdError error) {
