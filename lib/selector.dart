@@ -1,8 +1,6 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:hangwoman/about.dart';
 import 'package:hangwoman/homepage.dart';
 
@@ -28,11 +26,11 @@ class SelectorPage extends StatelessWidget {
                 child: Container(
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(6),
-                    color: Color.fromARGB(255, 191, 171, 225),
+                    color: const Color.fromARGB(255, 191, 171, 225),
                   ),
                   width: MediaQuery.of(context).size.width / 1.5,
-                  padding: EdgeInsets.all(16),
-                  child: Center(
+                  padding: const EdgeInsets.all(16),
+                  child: const Center(
                     child: Text(
                       "Easy",
                       style:
@@ -41,7 +39,7 @@ class SelectorPage extends StatelessWidget {
                   ),
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 36,
               ),
               GestureDetector(
@@ -53,11 +51,11 @@ class SelectorPage extends StatelessWidget {
                 child: Container(
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(6),
-                    color: Color.fromARGB(255, 219, 141, 193),
+                    color: const Color.fromARGB(255, 219, 141, 193),
                   ),
                   width: MediaQuery.of(context).size.width / 1.5,
-                  padding: EdgeInsets.all(16),
-                  child: Center(
+                  padding: const EdgeInsets.all(16),
+                  child: const Center(
                     child: Text(
                       "Medium",
                       style:
@@ -66,7 +64,7 @@ class SelectorPage extends StatelessWidget {
                   ),
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 36,
               ),
               GestureDetector(
@@ -78,11 +76,11 @@ class SelectorPage extends StatelessWidget {
                 child: Container(
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(6),
-                    color: Color.fromARGB(255, 227, 93, 98),
+                    color: const Color.fromARGB(255, 227, 93, 98),
                   ),
                   width: MediaQuery.of(context).size.width / 1.5,
-                  padding: EdgeInsets.all(16),
-                  child: Center(
+                  padding: const EdgeInsets.all(16),
+                  child: const Center(
                     child: Text(
                       "Advanced",
                       style:

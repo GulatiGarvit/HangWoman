@@ -121,7 +121,7 @@ class _HomePageState extends State<HomePage> {
     } else {
       if (!isToastVisible) {
         isToastVisible = true;
-        Fluttertoast.showToast(msg: "Galat Jawab!")
+        Fluttertoast.showToast(msg: "Wrong guess!")
             .then((value) => isToastVisible = false);
       }
 
@@ -159,6 +159,7 @@ class _HomePageState extends State<HomePage> {
   /// Loads a rewarded ad.
   void loadAd() {
     showLoaderDialog(context);
+    bool rewardEarned = false;
     RewardedAd.load(
         adUnitId: adUnitId,
         request: const AdRequest(),
@@ -168,26 +169,34 @@ class _HomePageState extends State<HomePage> {
             Navigator.pop(context);
             _rewardedAd = ad;
             ad.fullScreenContentCallback = FullScreenContentCallback(
+                onAdWillDismissFullScreenContent: (ad) {
+                  Fluttertoast.showToast(
+                      msg: "onAdWillDismissFullScreenContent");
+                },
                 onAdShowedFullScreenContent: (ad) {},
                 onAdImpression: (ad) {},
                 onAdFailedToShowFullScreenContent: (ad, err) {
                   ad.dispose();
                 },
                 onAdDismissedFullScreenContent: (ad) {
+                  if (rewardEarned) {
+                    rewardEarned = false;
+                    var toReveal = remaining(word, current);
+                    current = reveal(word, current, toReveal);
+                    if (current.replaceAll(" ", "") == word) {
+                      wordGuessed();
+                    } else {
+                      Fluttertoast.showToast(msg: "Revealed: $toReveal");
+                    }
+                    setState(() {});
+                  }
                   ad.dispose();
                 },
                 onAdClicked: (ad) {});
             _rewardedAd!.setImmersiveMode(true);
             _rewardedAd!.show(
               onUserEarnedReward: (AdWithoutView ad, RewardItem reward) {
-                var toReveal = remaining(word, current);
-                current = reveal(word, current, toReveal);
-                if (current.replaceAll(" ", "") == word) {
-                  wordGuessed();
-                } else {
-                  Fluttertoast.showToast(msg: "Revealed: $toReveal");
-                }
-                setState(() {});
+                rewardEarned = true;
                 print(
                     '$ad with reward $RewardItem(${reward.amount}, ${reward.type})');
               },

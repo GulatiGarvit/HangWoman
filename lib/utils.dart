@@ -73,10 +73,11 @@ Characters generateOptions(String word, String current, String eliminated) {
   int randIndex2;
   if (!contains) {
     var randIndex1 = Random().nextInt(finalString.length);
-    if (remaining.length > 1)
+    if (remaining.length > 1) {
       randIndex2 = Random().nextInt(remaining.length);
-    else
+    } else {
       randIndex2 = 0;
+    }
 
     finalString = replaceCharAt(finalString, randIndex1, remaining[randIndex2]);
   }
@@ -105,16 +106,16 @@ List<Widget> generateWidgets(Characters characters, Function optionClicked) {
               optionClicked.call(alphabet);
             },
             child: Container(
-              margin: EdgeInsets.all(10),
-              padding: EdgeInsets.all(10),
+              margin: const EdgeInsets.all(10),
+              padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(6),
-                color: Color.fromARGB(255, 251, 252, 250),
+                color: const Color.fromARGB(255, 251, 252, 250),
               ),
               child: Center(
                 child: Text(
                   alphabet,
-                  style: TextStyle(fontSize: 26),
+                  style: const TextStyle(fontSize: 26),
                 ),
               ),
             ),
@@ -125,7 +126,7 @@ List<Widget> generateWidgets(Characters characters, Function optionClicked) {
     finalList.add(row);
     if (c == 0) {
       finalList.add(
-        SizedBox(
+        const SizedBox(
           height: 26,
         ),
       );
