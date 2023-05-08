@@ -161,3 +161,24 @@ String remaining(String word, String current) {
   String toReveal = remainingChar[index];
   return toReveal;
 }
+
+showLoaderDialog(BuildContext context,
+    {bool isCancellable = true, String title = "Loading..."}) {
+  AlertDialog alert = AlertDialog(
+    content: Row(
+      children: [
+        const CircularProgressIndicator(),
+        Container(
+            margin: const EdgeInsets.only(left: 16),
+            child: const Text("Loading...")),
+      ],
+    ),
+  );
+  showDialog(
+    barrierDismissible: isCancellable,
+    context: context,
+    builder: (BuildContext context) {
+      return alert;
+    },
+  );
+}
