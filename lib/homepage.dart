@@ -8,16 +8,17 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:hangwoman/utils.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
-
+  int length;
+  HomePage(this.length) {}
   @override
   State<HomePage> createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
+  bool isToastVisible = false;
   final totalHearts = 5;
   String word = "";
-  String current = "";
+  String current = "Loading...";
   String eliminated = "";
   Characters? options;
   int score = 0;
@@ -81,6 +82,7 @@ class _HomePageState extends State<HomePage> {
               Text(
                 current,
                 style: TextStyle(fontSize: 36, fontWeight: FontWeight.bold),
+                textAlign: TextAlign.center,
               ),
               Spacer(),
               Column(
@@ -100,7 +102,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   void doTheMagic() async {
-    word = await generateWord(4 + Random().nextInt(4));
+    word = await generateWord(widget.length);
     word = word.toUpperCase();
     current = calculateInitDisplay(word);
     eliminated = "";
@@ -117,10 +119,14 @@ class _HomePageState extends State<HomePage> {
       print("Contains");
       current = reveal(word, current, alphabet);
     } else {
-      Fluttertoast.showToast(
-          msg: "Galat Jawab!", toastLength: Toast.LENGTH_SHORT);
+      if (!isToastVisible) {
+        isToastVisible = true;
+        Fluttertoast.showToast(msg: "Galat Jawab!")
+            .then((value) => isToastVisible = false);
+      }
+
       eliminated += alphabet;
-      heartsToShow();
+      decreaseHearts();
     }
     if (current.replaceAll(" ", "") != word) {
       options = generateOptions(word, current, eliminated);
@@ -134,7 +140,14 @@ class _HomePageState extends State<HomePage> {
   void wordGuessed() {
     Fluttertoast.showToast(msg: "Yay! The word was: $word");
     score += word.length;
-    setState(() {});
+    setState(() {
+      widgetOptions = <Widget>[];
+      widgetOptions.add(
+        Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    });
     doTheMagic();
   }
 
@@ -145,12 +158,14 @@ class _HomePageState extends State<HomePage> {
 
   /// Loads a rewarded ad.
   void loadAd() {
+    showLoaderDialog(context);
     RewardedAd.load(
         adUnitId: adUnitId,
         request: const AdRequest(),
         rewardedAdLoadCallback: RewardedAdLoadCallback(
           onAdLoaded: (ad) {
             debugPrint('$ad loaded.');
+            Navigator.pop(context);
             _rewardedAd = ad;
             ad.fullScreenContentCallback = FullScreenContentCallback(
                 onAdShowedFullScreenContent: (ad) {},
@@ -185,7 +200,7 @@ class _HomePageState extends State<HomePage> {
         ));
   }
 
-  void heartsToShow() {
+  void decreaseHearts() {
     noOfHearts -= 1;
     hearts = getHearts(noOfHearts);
     print(noOfHearts);
@@ -194,6 +209,14 @@ class _HomePageState extends State<HomePage> {
     if (noOfHearts == 0) {
       Fluttertoast.showToast(msg: "Level lost!");
       score = 0;
+      setState(() {
+        widgetOptions = <Widget>[];
+        widgetOptions.add(
+          Center(
+            child: CircularProgressIndicator(),
+          ),
+        );
+      });
       doTheMagic();
     }
   }
