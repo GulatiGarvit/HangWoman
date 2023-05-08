@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
+import 'package:hangwoman/about.dart';
 import 'package:hangwoman/homepage.dart';
 
 class SelectorPage extends StatelessWidget {
@@ -15,9 +16,9 @@ class SelectorPage extends StatelessWidget {
         child: Center(
           child: Column(
             mainAxisSize: MainAxisSize.max,
-            mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
+              Spacer(),
               GestureDetector(
                 onTap: () {
                   Navigator.push(context, MaterialPageRoute(builder: (ctx) {
@@ -88,6 +89,29 @@ class SelectorPage extends StatelessWidget {
                           TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
                     ),
                   ),
+                ),
+              ),
+              Spacer(),
+              Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      child: Text(
+                        "Escape Character ",
+                        style: TextStyle(fontFamily: 'Rockwell', fontSize: 20),
+                      ),
+                    ),
+                    GestureDetector(
+                        onTap: () {
+                          Navigator.push(context,
+                              MaterialPageRoute(builder: (context) {
+                            return AboutPage();
+                          }));
+                        },
+                        child: Icon(Icons.info_sharp)),
+                  ],
                 ),
               ),
             ],
