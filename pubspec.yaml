@@ -38,6 +38,7 @@ dependencies:
   http: ^0.13.6
   fluttertoast: ^8.2.1
   google_mobile_ads: ^3.0.0
+  url_launcher: ^6.1.10
 
 dev_dependencies:
   flutter_test:
@@ -77,10 +78,10 @@ flutter:
   # "family" key with the font family name, and a "fonts" key with a
   # list giving the asset and other descriptors for the font. For
   # example:
-  # fonts:
-  #   - family: Schyler
-  #     fonts:
-  #       - asset: fonts/Schyler-Regular.ttf
+  fonts:
+    - family: Rockwell
+      fonts:
+        - asset: assets/fonts/rockb.ttf
   #       - asset: fonts/Schyler-Italic.ttf
   #         style: italic
   #   - family: Trajan Pro
