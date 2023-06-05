@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:ffi';
 import 'dart:io';
 import 'dart:math';
@@ -31,9 +32,22 @@ var vowels = "AEIOU";
 Future<String> generateWord(int length) async {
   final response = await http.get(
       Uri.parse("https://random-word-api.herokuapp.com/word?length=$length"));
+  // final response = await http.get(
+  //     Uri.parse("https://api.api-ninjas.com/v1/randomword"),
+  //     headers: {'X-Api-Key': 'RqCWIJq5Rm72NvuQNuFg0A==n4jLcFsseVe05CLB'});
   var fin = response.body.replaceAll("[\"", "").replaceAll("\"]", "");
+  // var fin = jsonDecode(response.body);
   print(fin);
   return fin;
+}
+
+Future<String> getMeaning(String word) async {
+  final response = await http.get(
+      Uri.parse("https://api.api-ninjas.com/v1/dictionary?word=$word"),
+      headers: {'X-Api-Key': 'RqCWIJq5Rm72NvuQNuFg0A==n4jLcFsseVe05CLB'});
+  var data = jsonDecode(response.body);
+  print(data);
+  return data["definition"];
 }
 
 String calculateInitDisplay(String word) {
@@ -177,6 +191,124 @@ showLoaderDialog(BuildContext context,
   );
   showDialog(
     barrierDismissible: isCancellable,
+    context: context,
+    builder: (BuildContext context) {
+      return alert;
+    },
+  );
+}
+
+showLevelEndDialog(
+  BuildContext context,
+  int score,
+  String word,
+  String meaning,
+  VoidCallback onNegativeClicked,
+  VoidCallback onPositiveClicked, {
+  bool won = false,
+  int increment = 0,
+}) {
+  AlertDialog alert = AlertDialog();
+  if (won) {
+    alert = AlertDialog(
+        content: Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Padding(
+          padding: EdgeInsets.all(8),
+          child: Text(
+            "That's correct!",
+            style: TextStyle(fontFamily: 'Rockwell', fontSize: 30),
+          ),
+        ),
+        RichText(
+          text: TextSpan(
+              text: "$score",
+              style: TextStyle(
+                  fontFamily: 'Rockwell', fontSize: 30, color: Colors.black),
+              children: [
+                TextSpan(
+                    text: " +$increment",
+                    style: TextStyle(
+                        fontFamily: 'Rockwell',
+                        fontSize: 16,
+                        color: Colors.green))
+              ]),
+        ),
+        SizedBox(
+          height: 16,
+        ),
+        RichText(
+          text: TextSpan(text: "", children: [
+            TextSpan(
+                text: "$word",
+                style: TextStyle(
+                  fontFamily: 'Rockwell',
+                  fontSize: 20,
+                  color: Colors.black,
+                  decoration: TextDecoration.underline,
+                  fontWeight: FontWeight.bold,
+                )),
+            TextSpan(
+                text: ": ",
+                style: TextStyle(
+                  fontFamily: 'Rockwell',
+                  fontSize: 20,
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold,
+                )),
+            TextSpan(
+                text: meaning,
+                style: TextStyle(fontSize: 16, color: Colors.grey))
+          ]),
+        ),
+        SizedBox(
+          height: 16,
+        ),
+        Row(
+          mainAxisSize: MainAxisSize.max,
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: <Widget>[
+            Expanded(
+              child: ElevatedButton(
+                onPressed: () {},
+                style: ElevatedButton.styleFrom(backgroundColor: Colors.grey),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 12.0),
+                  child: Text(
+                    "Quit",
+                    style: TextStyle(
+                      fontFamily: 'Rockwell',
+                      fontSize: 16,
+                    ),
+                  ),
+                ),
+              ),
+              flex: 1,
+            ),
+            SizedBox(
+              width: 16,
+            ),
+            Expanded(
+              child: ElevatedButton(
+                onPressed: () {},
+                style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 12.0),
+                  child: Text("Next",
+                      style: TextStyle(fontFamily: 'Rockwell', fontSize: 16)),
+                ),
+              ),
+              flex: 1,
+            )
+          ],
+        )
+      ],
+    ));
+  }
+  showDialog(
+    barrierDismissible: false,
     context: context,
     builder: (BuildContext context) {
       return alert;

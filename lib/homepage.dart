@@ -18,6 +18,7 @@ class _HomePageState extends State<HomePage> {
   bool isToastVisible = false;
   final totalHearts = 5;
   String word = "";
+  String meaning = "";
   String current = "Loading...";
   String eliminated = "";
   Characters? options;
@@ -57,7 +58,13 @@ class _HomePageState extends State<HomePage> {
                   ),
                   Spacer(),
                   GestureDetector(
-                    onTap: loadAd,
+                    //onTap: loadAd,
+                    onTap: () =>
+                        showLevelEndDialog(context, score, word, meaning, () {
+                      Navigator.pop(context);
+                    }, () {
+                      doTheMagic();
+                    }, won: true),
                     child: Container(
                       child: Image.asset('assets/images/bulb_icon.png'),
                       height: 50,
@@ -103,6 +110,7 @@ class _HomePageState extends State<HomePage> {
 
   void doTheMagic() async {
     word = await generateWord(widget.length);
+    meaning = await getMeaning(word);
     word = word.toUpperCase();
     current = calculateInitDisplay(word);
     eliminated = "";
@@ -186,6 +194,9 @@ class _HomePageState extends State<HomePage> {
                     if (current.replaceAll(" ", "") == word) {
                       wordGuessed();
                     } else {
+                      options = generateOptions(word, current, eliminated);
+                      widgetOptions =
+                          generateWidgets(options!, handleOptionSelection);
                       Fluttertoast.showToast(msg: "Revealed: $toReveal");
                     }
                     setState(() {});
