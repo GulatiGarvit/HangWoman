@@ -29,26 +29,17 @@ var alphabets = [
   'Z'
 ];
 var vowels = "AEIOU";
-Future<String> generateWord(int length) async {
-  final response = await http.get(
-      Uri.parse("https://random-word-api.herokuapp.com/word?length=$length"));
+Future<List<String>> generateWord() async {
+  final response = await http.get(Uri.parse(
+      "https://retailor11.000webhostapp.com/HangWoman/generateWord.php"));
   // final response = await http.get(
   //     Uri.parse("https://api.api-ninjas.com/v1/randomword"),
   //     headers: {'X-Api-Key': 'RqCWIJq5Rm72NvuQNuFg0A==n4jLcFsseVe05CLB'});
-  var fin = response.body.replaceAll("[\"", "").replaceAll("\"]", "");
-  // var fin = jsonDecode(response.body);
-  print(fin);
-  return fin;
+  var data = jsonDecode(response.body);
+  return [data["word"], data["meaning"]];
 }
 
-Future<String> getMeaning(String word) async {
-  final response = await http.get(
-      Uri.parse("https://api.api-ninjas.com/v1/dictionary?word=$word"),
-      headers: {'X-Api-Key': 'RqCWIJq5Rm72NvuQNuFg0A==n4jLcFsseVe05CLB'});
-  var data = jsonDecode(response.body);
-  print(data);
-  return data["definition"];
-}
+
 
 String calculateInitDisplay(String word) {
   word = word.toUpperCase();

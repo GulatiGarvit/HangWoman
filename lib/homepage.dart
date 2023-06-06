@@ -109,8 +109,9 @@ class _HomePageState extends State<HomePage> {
   }
 
   void doTheMagic() async {
-    word = await generateWord(widget.length);
-    meaning = await getMeaning(word);
+    final data = await generateWord();
+    word = data[0];
+    meaning = data[1];
     word = word.toUpperCase();
     current = calculateInitDisplay(word);
     eliminated = "";
