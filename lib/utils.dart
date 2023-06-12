@@ -3,6 +3,7 @@ import 'dart:ffi';
 import 'dart:io';
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:hangwoman/constants.dart';
 import 'package:http/http.dart' as http;
 
 var alphabets = [
@@ -28,6 +29,34 @@ var alphabets = [
   'Y',
   'Z'
 ];
+var fullAlphabets = [
+  'A',
+  'B',
+  'C',
+  'D',
+  'E',
+  'F',
+  'G',
+  'H',
+  'I',
+  'J',
+  'K',
+  'L',
+  'M',
+  'N',
+  'O',
+  'P',
+  'Q',
+  'R',
+  'S',
+  'T',
+  'U',
+  'V',
+  'W',
+  'X',
+  'Y',
+  'Z'
+];
 var vowels = "AEIOU";
 Future<List<String>> generateWord() async {
   final response = await http.get(Uri.parse(
@@ -39,18 +68,35 @@ Future<List<String>> generateWord() async {
   return [data["word"], data["meaning"]];
 }
 
-
-
-String calculateInitDisplay(String word) {
+String calculateInitDisplay(String word, Difficulty difficulty) {
   word = word.toUpperCase();
   var finalString = "";
-  word.characters.forEach((element) {
-    finalString += vowels.contains(element) ? "$element " : "_ ";
-  });
+  switch (difficulty) {
+    case Difficulty.easy:
+      int i = 0;
+      word.characters.forEach((element) {
+        finalString += vowels.contains(element) ? "$element " : "_ ";
+      });
+      if (!vowels.contains(word.characters.first)) {
+        finalString = reveal(word, finalString, word.characters.first);
+      }
+      break;
+    case Difficulty.medium:
+      word.characters.forEach((element) {
+        finalString += vowels.contains(element) ? "$element " : "_ ";
+      });
+      break;
+    case Difficulty.hard:
+      word.characters.forEach((element) {
+        finalString += "_ ";
+      });
+      break;
+  }
   return finalString.trim();
 }
 
-Characters generateOptions(String word, String current, String eliminated) {
+Characters generateOptions(
+    String word, String current, String eliminated, Difficulty difficulty) {
   var remaining = "";
   var finalString = "";
   current = current.replaceAll(" ", "");
@@ -61,14 +107,26 @@ Characters generateOptions(String word, String current, String eliminated) {
   }
   var rand = Random();
   for (int i = 0; i < 6; i++) {
-    int index = rand.nextInt(21);
-    if (finalString.contains(alphabets[index]) ||
-        eliminated.contains(alphabets[index]) ||
-        current.contains(alphabets[index])) {
-      i--;
-      continue;
+    int index;
+    if (difficulty == Difficulty.hard) {
+      index = rand.nextInt(26);
+      if (finalString.contains(fullAlphabets[index]) ||
+          eliminated.contains(fullAlphabets[index]) ||
+          current.contains(fullAlphabets[index])) {
+        i--;
+        continue;
+      }
+      finalString += fullAlphabets[index];
+    } else {
+      index = rand.nextInt(21);
+      if (finalString.contains(alphabets[index]) ||
+          eliminated.contains(alphabets[index]) ||
+          current.contains(alphabets[index])) {
+        i--;
+        continue;
+      }
+      finalString += alphabets[index];
     }
-    finalString += alphabets[index];
   }
 
   var contains = false;
@@ -194,8 +252,8 @@ showLevelEndDialog(
   int score,
   String word,
   String meaning,
-  VoidCallback onNegativeClicked,
-  VoidCallback onPositiveClicked, {
+  Function(BuildContext) onNegativeClicked,
+  Function(BuildContext) onPositiveClicked, {
   bool won = false,
   int increment = 0,
 }) {
@@ -263,7 +321,9 @@ showLevelEndDialog(
           children: <Widget>[
             Expanded(
               child: ElevatedButton(
-                onPressed: () {},
+                onPressed: () {
+                  onNegativeClicked.call(context);
+                },
                 style: ElevatedButton.styleFrom(backgroundColor: Colors.grey),
                 child: Padding(
                   padding: const EdgeInsets.symmetric(vertical: 12.0),
@@ -283,11 +343,105 @@ showLevelEndDialog(
             ),
             Expanded(
               child: ElevatedButton(
-                onPressed: () {},
+                onPressed: () {
+                  onPositiveClicked(context);
+                },
                 style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
                 child: Padding(
                   padding: const EdgeInsets.symmetric(vertical: 12.0),
                   child: Text("Next",
+                      style: TextStyle(fontFamily: 'Rockwell', fontSize: 16)),
+                ),
+              ),
+              flex: 1,
+            )
+          ],
+        )
+      ],
+    ));
+  } else {
+    alert = AlertDialog(
+        content: Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Padding(
+          padding: EdgeInsets.all(8),
+          child: Text(
+            "Level Lost!",
+            style: TextStyle(fontFamily: 'Rockwell', fontSize: 30),
+          ),
+        ),
+        Text(
+          "$score",
+          style: TextStyle(
+              fontFamily: 'Rockwell', fontSize: 30, color: Colors.black),
+        ),
+        SizedBox(
+          height: 16,
+        ),
+        RichText(
+          text: TextSpan(text: "", children: [
+            TextSpan(
+                text: "$word",
+                style: TextStyle(
+                  fontFamily: 'Rockwell',
+                  fontSize: 20,
+                  color: Colors.black,
+                  decoration: TextDecoration.underline,
+                  fontWeight: FontWeight.bold,
+                )),
+            TextSpan(
+                text: ": ",
+                style: TextStyle(
+                  fontFamily: 'Rockwell',
+                  fontSize: 20,
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold,
+                )),
+            TextSpan(
+                text: meaning,
+                style: TextStyle(fontSize: 16, color: Colors.grey))
+          ]),
+        ),
+        SizedBox(
+          height: 16,
+        ),
+        Row(
+          mainAxisSize: MainAxisSize.max,
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: <Widget>[
+            Expanded(
+              child: ElevatedButton(
+                onPressed: () {
+                  onNegativeClicked.call(context);
+                },
+                style: ElevatedButton.styleFrom(backgroundColor: Colors.grey),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 12.0),
+                  child: Text(
+                    "Quit",
+                    style: TextStyle(
+                      fontFamily: 'Rockwell',
+                      fontSize: 16,
+                    ),
+                  ),
+                ),
+              ),
+              flex: 1,
+            ),
+            SizedBox(
+              width: 16,
+            ),
+            Expanded(
+              child: ElevatedButton(
+                onPressed: () {
+                  onPositiveClicked(context);
+                },
+                style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 12.0),
+                  child: Text("Restart",
                       style: TextStyle(fontFamily: 'Rockwell', fontSize: 16)),
                 ),
               ),

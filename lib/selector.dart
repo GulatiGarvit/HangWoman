@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:hangwoman/about.dart';
+import 'package:hangwoman/constants.dart';
 import 'package:hangwoman/homepage.dart';
 
 class SelectorPage extends StatelessWidget {
@@ -20,7 +21,7 @@ class SelectorPage extends StatelessWidget {
               GestureDetector(
                 onTap: () {
                   Navigator.push(context, MaterialPageRoute(builder: (ctx) {
-                    return HomePage(4 + Random().nextInt(3));
+                    return HomePage(Difficulty.easy);
                   }));
                 },
                 child: Container(
@@ -45,7 +46,7 @@ class SelectorPage extends StatelessWidget {
               GestureDetector(
                 onTap: () {
                   Navigator.push(context, MaterialPageRoute(builder: (ctx) {
-                    return HomePage(6 + Random().nextInt(3));
+                    return HomePage(Difficulty.medium);
                   }));
                 },
                 child: Container(
@@ -70,7 +71,7 @@ class SelectorPage extends StatelessWidget {
               GestureDetector(
                 onTap: () {
                   Navigator.push(context, MaterialPageRoute(builder: (ctx) {
-                    return HomePage(8 + Random().nextInt(4));
+                    return HomePage(Difficulty.hard);
                   }));
                 },
                 child: Container(

@@ -5,11 +5,12 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:hangwoman/constants.dart';
 import 'package:hangwoman/utils.dart';
 
 class HomePage extends StatefulWidget {
-  int length;
-  HomePage(this.length) {}
+  Difficulty difficulty;
+  HomePage(this.difficulty) {}
   @override
   State<HomePage> createState() => _HomePageState();
 }
@@ -26,6 +27,7 @@ class _HomePageState extends State<HomePage> {
   var widgetOptions = <Widget>[];
   var noOfHearts;
   var hearts = "";
+  late BuildContext context;
 
   @override
   void initState() {
@@ -35,6 +37,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    this.context = context;
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -58,13 +61,7 @@ class _HomePageState extends State<HomePage> {
                   ),
                   Spacer(),
                   GestureDetector(
-                    //onTap: loadAd,
-                    onTap: () =>
-                        showLevelEndDialog(context, score, word, meaning, () {
-                      Navigator.pop(context);
-                    }, () {
-                      doTheMagic();
-                    }, won: true),
+                    onTap: loadAd,
                     child: Container(
                       child: Image.asset('assets/images/bulb_icon.png'),
                       height: 50,
@@ -74,7 +71,7 @@ class _HomePageState extends State<HomePage> {
                 ],
               ),
               Image.asset(
-                "assets/gifs/Kfde.gif",
+                "assets/images/hangman.png",
                 height: 300,
                 width: 300,
               ),
@@ -111,11 +108,13 @@ class _HomePageState extends State<HomePage> {
   void doTheMagic() async {
     final data = await generateWord();
     word = data[0];
+    word = word.replaceAll("-", "").replaceAll(" ", "");
     meaning = data[1];
+    print(word);
     word = word.toUpperCase();
-    current = calculateInitDisplay(word);
+    current = calculateInitDisplay(word, widget.difficulty);
     eliminated = "";
-    options = generateOptions(word, current, eliminated);
+    options = generateOptions(word, current, eliminated, widget.difficulty);
     noOfHearts = totalHearts;
     hearts = getHearts(noOfHearts);
     widgetOptions = generateWidgets(options!, handleOptionSelection);
@@ -130,7 +129,7 @@ class _HomePageState extends State<HomePage> {
     } else {
       if (!isToastVisible) {
         isToastVisible = true;
-        Fluttertoast.showToast(msg: "Wrong guess!")
+        Fluttertoast.showToast(msg: "Nah")
             .then((value) => isToastVisible = false);
       }
 
@@ -138,7 +137,7 @@ class _HomePageState extends State<HomePage> {
       decreaseHearts();
     }
     if (current.replaceAll(" ", "") != word) {
-      options = generateOptions(word, current, eliminated);
+      options = generateOptions(word, current, eliminated, widget.difficulty);
       widgetOptions = generateWidgets(options!, handleOptionSelection);
     } else {
       wordGuessed();
@@ -147,17 +146,23 @@ class _HomePageState extends State<HomePage> {
   }
 
   void wordGuessed() {
-    Fluttertoast.showToast(msg: "Yay! The word was: $word");
     score += word.length;
-    setState(() {
-      widgetOptions = <Widget>[];
-      widgetOptions.add(
-        Center(
-          child: CircularProgressIndicator(),
-        ),
-      );
-    });
-    doTheMagic();
+    setState(() {});
+    showLevelEndDialog(context, score, word, meaning, (ctx) {
+      Navigator.pop(ctx);
+      Navigator.pop(ctx);
+    }, (ctx) {
+      Navigator.pop(ctx);
+      setState(() {
+        widgetOptions = <Widget>[];
+        widgetOptions.add(
+          Center(
+            child: CircularProgressIndicator(),
+          ),
+        );
+      });
+      doTheMagic();
+    }, won: true, increment: word.length);
   }
 
   RewardedAd? _rewardedAd;
@@ -195,7 +200,8 @@ class _HomePageState extends State<HomePage> {
                     if (current.replaceAll(" ", "") == word) {
                       wordGuessed();
                     } else {
-                      options = generateOptions(word, current, eliminated);
+                      options = generateOptions(
+                          word, current, eliminated, widget.difficulty);
                       widgetOptions =
                           generateWidgets(options!, handleOptionSelection);
                       Fluttertoast.showToast(msg: "Revealed: $toReveal");
@@ -228,17 +234,22 @@ class _HomePageState extends State<HomePage> {
     print(hearts);
     setState(() {});
     if (noOfHearts == 0) {
-      Fluttertoast.showToast(msg: "Level lost!");
       score = 0;
-      setState(() {
-        widgetOptions = <Widget>[];
-        widgetOptions.add(
-          Center(
-            child: CircularProgressIndicator(),
-          ),
-        );
+      showLevelEndDialog(context, score, word, meaning, (p0) {
+        Navigator.pop(p0);
+        Navigator.pop(p0);
+      }, (p0) {
+        Navigator.pop(p0);
+        setState(() {
+          widgetOptions = <Widget>[];
+          widgetOptions.add(
+            Center(
+              child: CircularProgressIndicator(),
+            ),
+          );
+        });
+        doTheMagic();
       });
-      doTheMagic();
     }
   }
 
