@@ -1,4 +1,4 @@
-package com.example.hangwoman
+package co.escapecharacter.hangwoman
 
 import io.flutter.embedding.android.FlutterActivity
 
